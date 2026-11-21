@@ -1,47 +1,46 @@
 import streamlit as st
+import pandas as pd
+import pickle
 
-st.set_page_config(
-    page_title="Boston House Price Analytics",
-    page_icon="🏠",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# Load Model
+with open("Boston_House_Price_Model.pkl", "rb") as file:
+    model = pickle.load(file)
 
-st.title("🏠 Boston House Price Analytics")
+st.set_page_config(page_title="Boston House Price Prediction", page_icon="🏠")
 
-st.subheader("Welcome to Our Machine Learning Project")
+st.title("🏠 Boston House Price Prediction")
+st.write("Enter the house details below:")
 
-st.write("""
-Explore our interactive Boston House Price Prediction
-platform, developed using Python, Machine Learning
-and Streamlit.
-""")
+# User Inputs
+ID = st.number_input("ID", min_value=1, value=25)
+indus = st.number_input("INDUS", value=7.07)
+chas = st.selectbox("CHAS (0 = No, 1 = Yes)", [0, 1])
+nox = st.number_input("NOX", value=0.469)
+rm = st.number_input("RM", value=6.421)
+age = st.number_input("AGE", value=78.9)
+dis = st.number_input("DIS", value=4.967)
+rad = st.number_input("RAD", value=2)
+tax = st.number_input("TAX", value=242)
+ptratio = st.number_input("PTRATIO", value=17.8)
+lstat = st.number_input("LSTAT", value=9.14)
 
-st.divider()
+# Predict Button
+if st.button("Predict House Price"):
 
-col1, col2, col3 = st.columns(3)
+    input_data = pd.DataFrame({
+        "ID": [ID],
+        "indus": [indus],
+        "chas": [chas],
+        "nox": [nox],
+        "rm": [rm],
+        "age": [age],
+        "dis": [dis],
+        "rad": [rad],
+        "tax": [tax],
+        "ptratio": [ptratio],
+        "lstat": [lstat]
+    })
 
-with col1:
-    st.metric("Project", "House Price Prediction")
+    prediction = model.predict(input_data)
 
-with col2:
-    st.metric("Technology", "Machine Learning")
-
-with col3:
-    st.metric("Framework", "Streamlit")
-
-st.divider()
-
-st.header("Explore Our Project")
-
-st.write("""
-Use the navigation sidebar to explore all nine sections
-of our Boston House Price Prediction project.
-
-You can explore the dataset, visualize relationships,
-compare machine learning models and predict house prices.
-""")
-
-st.info(
-    "Select any project page from the sidebar to get started."
-)
+    st.success(f"🏡 Predicted MEDV: {prediction[0]:.2f}")
