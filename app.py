@@ -1,96 +1,46 @@
-
 import streamlit as st
+import pandas as pd
+import pickle
 
-st.set_page_config(
-    page_title="Boston House Price Analytics",
-    page_icon="🏠",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# Load Model
+with open("Boston_House_Price_Model.pkl", "rb") as file:
+    model = pickle.load(file)
 
-st.markdown("""
-<style>
-.stApp {
-    background-color: #F7F9FC;
-}
+st.set_page_config(page_title="Boston House Price Prediction", page_icon="🏠")
 
-[data-testid="stSidebar"] {
-    background-color: #0B2447;
-}
+st.title("🏠 Boston House Price Prediction")
+st.write("Enter the house details below:")
 
-[data-testid="stSidebar"] * {
-    color: white;
-}
+# User Inputs
+ID = st.number_input("ID", min_value=1, value=25)
+indus = st.number_input("INDUS", value=7.07)
+chas = st.selectbox("CHAS (0 = No, 1 = Yes)", [0, 1])
+nox = st.number_input("NOX", value=0.469)
+rm = st.number_input("RM", value=6.421)
+age = st.number_input("AGE", value=78.9)
+dis = st.number_input("DIS", value=4.967)
+rad = st.number_input("RAD", value=2)
+tax = st.number_input("TAX", value=242)
+ptratio = st.number_input("PTRATIO", value=17.8)
+lstat = st.number_input("LSTAT", value=9.14)
 
-h1, h2, h3 {
-    color: #0B2447;
-}
+# Predict Button
+if st.button("Predict House Price"):
 
-div[data-testid="stMetric"] {
-    background-color: white;
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid #E5EAF2;
-}
-</style>
-""", unsafe_allow_html=True)
+    input_data = pd.DataFrame({
+        "ID": [ID],
+        "indus": [indus],
+        "chas": [chas],
+        "nox": [nox],
+        "rm": [rm],
+        "age": [age],
+        "dis": [dis],
+        "rad": [rad],
+        "tax": [tax],
+        "ptratio": [ptratio],
+        "lstat": [lstat]
+    })
 
-st.sidebar.title("🏠 Boston Analytics")
-st.sidebar.caption("House Price Prediction Platform")
+    prediction = model.predict(input_data)
 
-st.title("Boston House Price Analytics")
-
-st.write(
-    "An interactive machine learning platform "
-    "for house price prediction and data analysis."
-)
-
-st.divider()
-
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    st.metric("Project", "House Price Prediction")
-
-with col2:
-    st.metric("ML Approach", "Supervised Learning")
-
-with col3:
-    st.metric("Platform", "Streamlit")
-
-st.divider()
-
-st.subheader("Welcome to the Platform")
-
-st.write(
-    "Explore house price predictions, machine learning "
-    "model performance, dataset analysis and insights."
-)
-
-st.info("Use the sidebar to navigate through the project.")
-
-st.subheader("Project Features")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.markdown("""
-    ### 🏡 Price Prediction
-
-    Predict house prices using a trained ML model.
-
-    ### 📊 Model Comparison
-
-    Compare machine learning algorithms.
-    """)
-
-with col2:
-    st.markdown("""
-    ### 📈 EDA Dashboard
-
-    Explore distributions and correlations.
-
-    ### 🗂️ Dataset Explorer
-
-    Explore the cleaned Boston dataset.
-    """)
+    st.success(f"🏡 Predicted MEDV: {prediction[0]:.2f}")
