@@ -20,7 +20,6 @@ def load_model():
 
     model_path = (
         project_folder
-        / "models"
         / "Boston_House_Price_Model.pkl"
     )
 
